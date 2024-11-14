@@ -5,8 +5,9 @@ import {
   FileDown, 
   ImageDown, 
   FileText, 
-  Compress, 
-  Lock
+  Archive, 
+  Lock,
+  Crop
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 interface ActionPanelProps {
   selectedFiles: string[];
@@ -33,6 +35,11 @@ export const ActionPanel = ({
   const isPDF = selectedFiles.every(file => file.endsWith('.pdf'));
   const isImage = selectedFiles.every(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
   
+  const handleOperation = (operation: string) => {
+    toast.info(`Processing: ${operation}...`);
+    // The actual API call will be implemented later
+  };
+
   return (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-4 gap-4 border border-gray-100">
       <div className="text-sm text-gray-600">
@@ -65,13 +72,13 @@ export const ActionPanel = ({
               <DropdownMenuItem onClick={onSplit} disabled={selectedFiles.length !== 1}>
                 <Scissors className="w-4 h-4 mr-2" /> Split PDF
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Compress className="w-4 h-4 mr-2" /> Compress PDF
+              <DropdownMenuItem onClick={() => handleOperation('compress-pdf')}>
+                <Archive className="w-4 h-4 mr-2" /> Compress PDF
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleOperation('protect-pdf')}>
                 <Lock className="w-4 h-4 mr-2" /> Protect PDF
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleOperation('convert-to-word')}>
                 <FileDown className="w-4 h-4 mr-2" /> Convert to Word
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -94,17 +101,17 @@ export const ActionPanel = ({
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel>Image Operations</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Compress className="w-4 h-4 mr-2" /> Compress Image
+              <DropdownMenuItem onClick={() => handleOperation('compress-image')}>
+                <Archive className="w-4 h-4 mr-2" /> Compress Image
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleOperation('rotate-image')}>
                 <RotateCw className="w-4 h-4 mr-2" /> Rotate Image
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleOperation('convert-image')}>
                 <FileDown className="w-4 h-4 mr-2" /> Convert Format
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Scissors className="w-4 h-4 mr-2" /> Crop Image
+              <DropdownMenuItem onClick={() => handleOperation('crop-image')}>
+                <Crop className="w-4 h-4 mr-2" /> Crop Image
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
