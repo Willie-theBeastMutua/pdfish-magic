@@ -32,20 +32,20 @@ export const FileUploader = ({ onFilesAdded }: FileUploaderProps) => {
     <div
       {...getRootProps()}
       className={cn(
-        "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors",
+        "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors touch-manipulation",
         isDragActive ? "border-primary bg-primary/5" : "border-gray-300 hover:border-primary"
       )}
     >
       <input {...getInputProps()} />
-      <Upload className="w-12 h-12 mx-auto mb-4 text-primary" />
-      <p className="text-lg font-medium text-gray-700">
+      <Upload className="w-10 h-10 mx-auto mb-3 text-primary" />
+      <p className="text-base font-medium text-gray-700">
         {isDragActive ? (
           "Drop your files here..."
         ) : (
-          "Drag & drop files here, or click to select"
+          "Tap to select files"
         )}
       </p>
-      <p className="text-sm text-gray-500 mt-2">
+      <p className="text-xs text-gray-500 mt-2">
         Supports PDF, PNG, JPG and GIF files
       </p>
     </div>

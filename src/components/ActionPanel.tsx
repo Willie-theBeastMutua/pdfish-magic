@@ -15,7 +15,7 @@ export const ActionPanel = ({
   const hasSelection = selectedFiles.length > 0;
   
   return (
-    <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-4">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between bg-white rounded-lg shadow-sm p-3 gap-3">
       <div className="text-sm text-gray-600">
         {hasSelection ? (
           <span>{selectedFiles.length} file(s) selected</span>
@@ -23,10 +23,11 @@ export const ActionPanel = ({
           <span>Select files to perform actions</span>
         )}
       </div>
-      <div className="flex space-x-2">
+      <div className="flex gap-2">
         <Button
           variant="outline"
           size="sm"
+          className="flex-1 sm:flex-none"
           disabled={selectedFiles.length < 2}
           onClick={onMerge}
         >
@@ -36,6 +37,7 @@ export const ActionPanel = ({
         <Button
           variant="outline"
           size="sm"
+          className="flex-1 sm:flex-none"
           disabled={selectedFiles.length !== 1}
           onClick={onSplit}
         >

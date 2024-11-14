@@ -15,11 +15,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-lg mx-auto px-4 py-6 space-y-6 animate-fade-in">
         <header className="text-center">
-          <h1 className="text-4xl font-bold text-primary mb-2">Document Manager</h1>
-          <p className="text-gray-600">Manage your PDFs and images with ease</p>
+          <h1 className="text-2xl font-bold text-primary mb-2">Document Manager</h1>
+          <p className="text-sm text-gray-600">Manage your PDFs and images with ease</p>
         </header>
 
         <FileUploader onFilesAdded={handleFilesAdded} />
