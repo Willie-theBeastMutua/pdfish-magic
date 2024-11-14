@@ -26,7 +26,7 @@ export const FileList = ({
       {files.map((file) => (
         <div
           key={file.id}
-          className="bg-white rounded-lg shadow-sm p-3 flex items-center space-x-3 hover:shadow-md transition-shadow animate-fade-up touch-manipulation"
+          className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-4 flex items-center space-x-4 hover:shadow-md transition-all duration-300 animate-fade-up touch-manipulation border border-gray-100"
         >
           <Checkbox
             checked={selectedFiles.includes(file.id)}

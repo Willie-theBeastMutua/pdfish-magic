@@ -15,17 +15,21 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-lg mx-auto px-4 py-6 space-y-6 animate-fade-in">
-        <header className="text-center">
-          <h1 className="text-2xl font-bold text-primary mb-2">Document Manager</h1>
-          <p className="text-sm text-gray-600">Manage your PDFs and images with ease</p>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-8 animate-fade-in">
+        <header className="text-center space-y-3">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+            Document Manager
+          </h1>
+          <p className="text-sm text-gray-600">
+            Transform your documents effortlessly
+          </p>
         </header>
 
         <FileUploader onFilesAdded={handleFilesAdded} />
         
         {files.length > 0 && (
-          <div className="space-y-4 animate-fade-up">
+          <div className="space-y-6 animate-fade-up">
             <ActionPanel 
               selectedFiles={selectedFiles}
               onMerge={() => {/* Implement in next iteration */}}
