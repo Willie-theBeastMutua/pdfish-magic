@@ -17,9 +17,10 @@ const Index = () => {
     console.log('Files added:', newFiles);
   };
 
-  const selectedFile = selectedFiles.length === 1 && files.find(f => f.id === selectedFiles[0]);
-  const isPDF = selectedFile?.type.includes('pdf');
-  const isImage = selectedFile?.type.includes('image');
+  // Find the selected file and ensure it exists before accessing its properties
+  const selectedFile = files.find(f => f.id === selectedFiles[0]);
+  const isPDF = selectedFile?.type?.includes('pdf') ?? false;
+  const isImage = selectedFile?.type?.includes('image') ?? false;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
