@@ -3,24 +3,32 @@ import { FileUploader } from "@/components/FileUploader";
 import { FileList } from "@/components/FileList";
 import { ActionPanel } from "@/components/ActionPanel";
 import { PDFViewer } from "@/components/PDFViewer";
+import { ImageViewer } from "@/components/ImageViewer";
 import { File } from "@/types/files";
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const { toast } = useToast();
 
   const handleFilesAdded = (newFiles: File[]) => {
     setFiles((prev) => [...prev, ...newFiles]);
+    console.log('Files added:', newFiles);
   };
 
-  const selectedPDFFile = selectedFiles.length === 1 && files.find(f => 
-    f.id === selectedFiles[0] && f.type.includes('pdf')
-  );
+  const selectedFile = selectedFiles.length === 1 && files.find(f => f.id === selectedFiles[0]);
+  const isPDF = selectedFile?.type.includes('pdf');
+  const isImage = selectedFile?.type.includes('image');
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      {selectedPDFFile ? (
-        <PDFViewer selectedFile={selectedPDFFile.url} />
+      {selectedFile ? (
+        isPDF ? (
+          <PDFViewer selectedFile={selectedFile.url} />
+        ) : isImage ? (
+          <ImageViewer selectedFile={selectedFile.url} />
+        ) : null
       ) : (
         <div className="max-w-lg mx-auto px-4 py-8 space-y-8 animate-fade-in">
           <header className="text-center space-y-3">
@@ -38,8 +46,18 @@ const Index = () => {
             <div className="space-y-6 animate-fade-up">
               <ActionPanel 
                 selectedFiles={selectedFiles}
-                onMerge={() => {/* Implement in next iteration */}}
-                onSplit={() => {/* Implement in next iteration */}}
+                onMerge={() => {
+                  toast({
+                    title: "Coming Soon",
+                    description: "This feature will be available soon!",
+                  });
+                }}
+                onSplit={() => {
+                  toast({
+                    title: "Coming Soon",
+                    description: "This feature will be available soon!",
+                  });
+                }}
               />
               
               <FileList
