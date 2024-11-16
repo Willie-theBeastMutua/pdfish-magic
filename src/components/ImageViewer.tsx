@@ -4,9 +4,10 @@ import { Button } from './ui/button';
 
 interface ImageViewerProps {
   selectedFile: string;
+  onCompress: () => void;
 }
 
-export const ImageViewer = ({ selectedFile }: ImageViewerProps) => {
+export const ImageViewer = ({ selectedFile, onCompress }: ImageViewerProps) => {
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Top Actions Bar */}
@@ -21,7 +22,7 @@ export const ImageViewer = ({ selectedFile }: ImageViewerProps) => {
           <Button variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors">
             <RotateCw className="w-4 h-4 mr-2" /> Rotate
           </Button>
-          <Button variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors">
+          <Button variant="outline" size="sm" onClick={onCompress} className="hover:bg-primary hover:text-white transition-colors">
             <Archive className="w-4 h-4 mr-2" /> Compress
           </Button>
         </div>
