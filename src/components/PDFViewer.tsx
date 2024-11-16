@@ -7,9 +7,18 @@ import { cn } from '@/lib/utils';
 interface PDFViewerProps {
   selectedFile: string;
   onPageDelete?: (pageIndex: number) => void;
+  onCompress?: () => void;
+  onMerge?: () => void;
+  onSplit?: () => void;
 }
 
-export const PDFViewer = ({ selectedFile, onPageDelete }: PDFViewerProps) => {
+export const PDFViewer = ({ 
+  selectedFile, 
+  onPageDelete,
+  onCompress,
+  onMerge,
+  onSplit 
+}: PDFViewerProps) => {
   const [pages, setPages] = useState(Array.from({ length: 5 }, (_, i) => ({
     id: `page-${i + 1}`,
     pageNumber: i + 1,
@@ -28,31 +37,20 @@ export const PDFViewer = ({ selectedFile, onPageDelete }: PDFViewerProps) => {
     if (currentPage === result.source.index + 1) {
       setCurrentPage(result.destination.index + 1);
     }
-    console.log('Pages reordered:', items);
-  };
-
-  const toggleSidePanel = () => {
-    setIsSidePanelOpen(!isSidePanelOpen);
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       {/* Top Actions Bar */}
       <div className="flex items-center justify-between p-4 bg-white/80 backdrop-blur-sm border-b shadow-sm overflow-x-auto sticky top-0 z-10">
         <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-          <Button variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap">
-            <FileDown className="w-4 h-4 mr-2" /> Save
-          </Button>
-          <Button variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap">
-            <Lock className="w-4 h-4 mr-2" /> Protect
-          </Button>
-          <Button variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap">
-            <Scissors className="w-4 h-4 mr-2" /> Split
-          </Button>
-          <Button variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap">
+          <Button onClick={onMerge} variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap bg-white/90">
             <Merge className="w-4 h-4 mr-2" /> Merge
           </Button>
-          <Button variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap">
+          <Button onClick={onSplit} variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap bg-white/90">
+            <Scissors className="w-4 h-4 mr-2" /> Split
+          </Button>
+          <Button onClick={onCompress} variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap bg-white/90">
             <Archive className="w-4 h-4 mr-2" /> Compress
           </Button>
         </div>
@@ -62,21 +60,23 @@ export const PDFViewer = ({ selectedFile, onPageDelete }: PDFViewerProps) => {
       <div className="flex flex-1 overflow-hidden relative">
         {/* PDF Preview */}
         <div className={cn(
-          "flex-1 p-4 overflow-auto transition-all duration-300",
-          !isSidePanelOpen && "pr-0"
+          "flex-1 transition-all duration-300 ease-in-out",
+          isSidePanelOpen ? "pr-80" : "pr-0"
         )}>
-          <div className="bg-white rounded-lg shadow-lg p-4 min-h-[800px] animate-fade-in">
-            <iframe
-              src={`${selectedFile}#page=${currentPage}`}
-              className="w-full h-full"
-              title="PDF Preview"
-            />
+          <div className="h-full p-4">
+            <div className="bg-white rounded-lg shadow-lg h-full animate-fade-in">
+              <iframe
+                src={`${selectedFile}#page=${currentPage}`}
+                className="w-full h-full rounded-lg"
+                title="PDF Preview"
+              />
+            </div>
           </div>
         </div>
 
         {/* Toggle Side Panel Button */}
         <button
-          onClick={toggleSidePanel}
+          onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
           className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm p-2 rounded-l-lg shadow-md z-10 hover:bg-gray-50 transition-colors"
           aria-label={isSidePanelOpen ? "Close side panel" : "Open side panel"}
         >
@@ -85,7 +85,7 @@ export const PDFViewer = ({ selectedFile, onPageDelete }: PDFViewerProps) => {
 
         {/* Side Panel */}
         <div className={cn(
-          "w-80 bg-white/80 backdrop-blur-sm border-l overflow-y-auto transition-all duration-300 ease-in-out shadow-lg",
+          "fixed right-0 top-0 bottom-0 w-80 bg-white/80 backdrop-blur-sm border-l overflow-y-auto transition-all duration-300 ease-in-out shadow-lg h-screen pt-16",
           isSidePanelOpen ? "translate-x-0" : "translate-x-full"
         )}>
           <div className="p-4">
@@ -110,31 +110,30 @@ export const PDFViewer = ({ selectedFile, onPageDelete }: PDFViewerProps) => {
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             className={cn(
-                              "group flex flex-col p-2 bg-gray-50/50 rounded-lg cursor-move hover:bg-gray-100/50 transition-all duration-200",
+                              "group relative aspect-[3/4] rounded-lg cursor-move overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all duration-200",
                               snapshot.isDragging && "shadow-lg scale-105",
-                              currentPage === page.pageNumber && "ring-2 ring-primary/50"
+                              currentPage === page.pageNumber && "ring-2 ring-primary"
                             )}
                             onClick={() => setCurrentPage(page.pageNumber)}
                           >
-                            {/* Thumbnail Preview */}
-                            <div className="relative w-full aspect-[3/4] mb-2 bg-white rounded-lg border overflow-hidden group-hover:shadow-md transition-shadow">
-                              <iframe
-                                src={page.thumbnail}
-                                className="w-full h-full scale-100 origin-top-left"
-                                title={`Page ${page.pageNumber} thumbnail`}
-                              />
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-gray-600">Page {page.pageNumber}</span>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onPageDelete?.(index);
-                                }}
-                                className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-all duration-200"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                            <iframe
+                              src={page.thumbnail}
+                              className="w-full h-full scale-[0.99] origin-top-left bg-white"
+                              title={`Page ${page.pageNumber} thumbnail`}
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/50 to-transparent">
+                              <span className="text-sm text-white">Page {page.pageNumber}</span>
+                              {onPageDelete && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onPageDelete(index);
+                                  }}
+                                  className="absolute right-2 bottom-2 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-white/20 transition-all duration-200"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
                             </div>
                           </div>
                         )}

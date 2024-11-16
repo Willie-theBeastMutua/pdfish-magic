@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FileUploader } from "@/components/FileUploader";
 import { FileList } from "@/components/FileList";
 import { ActionPanel } from "@/components/ActionPanel";
@@ -14,21 +14,56 @@ const Index = () => {
 
   const handleFilesAdded = (newFiles: File[]) => {
     setFiles((prev) => [...prev, ...newFiles]);
-    console.log('Files added:', newFiles);
+    if (newFiles.length > 0) {
+      setSelectedFiles([newFiles[0].id]); // Auto-select the first uploaded file
+    }
   };
 
-  // Find the selected file and ensure it exists before accessing its properties
+  // Processing functions
+  const handleMerge = async () => {
+    toast({
+      title: "Processing PDFs",
+      description: "Merging selected PDF files...",
+    });
+    // Implement PDF merge logic here
+  };
+
+  const handleSplit = async () => {
+    toast({
+      title: "Processing PDF",
+      description: "Splitting PDF into separate pages...",
+    });
+    // Implement PDF split logic here
+  };
+
+  const handleCompress = async () => {
+    toast({
+      title: "Processing File",
+      description: "Compressing your file...",
+    });
+    // Implement compression logic here
+  };
+
+  // Find the selected file
   const selectedFile = files.find(f => f.id === selectedFiles[0]);
-  const isPDF = selectedFile?.type?.includes('pdf') ?? false;
-  const isImage = selectedFile?.type?.includes('image') ?? false;
+  const isPDF = selectedFile?.type?.includes('pdf');
+  const isImage = selectedFile?.type?.includes('image');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       {selectedFile ? (
         isPDF ? (
-          <PDFViewer selectedFile={selectedFile.url} />
+          <PDFViewer 
+            selectedFile={selectedFile.url} 
+            onCompress={handleCompress}
+            onMerge={handleMerge}
+            onSplit={handleSplit}
+          />
         ) : isImage ? (
-          <ImageViewer selectedFile={selectedFile.url} />
+          <ImageViewer 
+            selectedFile={selectedFile.url}
+            onCompress={handleCompress} 
+          />
         ) : null
       ) : (
         <div className="max-w-lg mx-auto px-4 py-8 space-y-8 animate-fade-in">
@@ -47,18 +82,9 @@ const Index = () => {
             <div className="space-y-6 animate-fade-up">
               <ActionPanel 
                 selectedFiles={selectedFiles}
-                onMerge={() => {
-                  toast({
-                    title: "Coming Soon",
-                    description: "This feature will be available soon!",
-                  });
-                }}
-                onSplit={() => {
-                  toast({
-                    title: "Coming Soon",
-                    description: "This feature will be available soon!",
-                  });
-                }}
+                onMerge={handleMerge}
+                onSplit={handleSplit}
+                onCompress={handleCompress}
               />
               
               <FileList

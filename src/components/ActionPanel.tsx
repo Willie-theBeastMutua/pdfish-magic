@@ -23,12 +23,14 @@ interface ActionPanelProps {
   selectedFiles: string[];
   onMerge: () => void;
   onSplit: () => void;
+  onCompress: () => void;
 }
 
 export const ActionPanel = ({
   selectedFiles,
   onMerge,
   onSplit,
+  onCompress,
 }: ActionPanelProps) => {
   const hasSelection = selectedFiles.length > 0;
   const isPDF = selectedFiles.every(file => file.endsWith('.pdf'));
@@ -66,14 +68,8 @@ export const ActionPanel = ({
               <DropdownMenuItem onClick={onSplit} disabled={selectedFiles.length !== 1}>
                 <Scissors className="w-4 h-4 mr-2" /> Split PDF
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onCompress}>
                 <Archive className="w-4 h-4 mr-2" /> Compress PDF
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Lock className="w-4 h-4 mr-2" /> Protect PDF
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <FileDown className="w-4 h-4 mr-2" /> Convert to Word
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -95,14 +91,11 @@ export const ActionPanel = ({
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel>Image Operations</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onCompress}>
                 <Archive className="w-4 h-4 mr-2" /> Compress Image
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <RotateCw className="w-4 h-4 mr-2" /> Rotate Image
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <FileDown className="w-4 h-4 mr-2" /> Convert Format
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Crop className="w-4 h-4 mr-2" /> Crop Image
