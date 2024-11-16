@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Trash2, FileDown, Lock, Scissors, Merge, Archive, ChevronRight, ChevronLeft, RotateCw, Download } from 'lucide-react';
 import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
+import { Merge, Scissors, Archive, RotateCw, Download, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useToast } from './ui/use-toast';
+import { cn } from '@/lib/utils';
+import { SidePanel } from './pdf/SidePanel';
 
 interface PDFViewerProps {
   selectedFile: string;
@@ -32,12 +32,21 @@ export const PDFViewer = ({
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
+    
     const items = Array.from(pages);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-    setPages(items);
-    // Update current page view if needed
-    setCurrentPage(result.destination.index + 1);
+    
+    // Update pages array with new order
+    setPages(items.map((item, index) => ({
+      ...item,
+      pageNumber: index + 1,
+    })));
+    
+    // Update current page to follow the dragged item
+    if (currentPage === result.source.index + 1) {
+      setCurrentPage(result.destination.index + 1);
+    }
   };
 
   const handleDownload = async () => {
@@ -107,78 +116,15 @@ export const PDFViewer = ({
           </div>
         </div>
 
-        {/* Toggle Side Panel Button */}
-        <button
-          onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm p-2 rounded-l-lg shadow-md z-10 hover:bg-gray-50 transition-colors"
-          aria-label={isSidePanelOpen ? "Close side panel" : "Open side panel"}
-        >
-          {isSidePanelOpen ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
-
-        {/* Side Panel */}
-        <div className={cn(
-          "fixed right-0 top-0 bottom-0 w-80 bg-white/80 backdrop-blur-sm border-l transition-all duration-300 ease-in-out shadow-lg h-screen pt-16",
-          isSidePanelOpen ? "translate-x-0" : "translate-x-full"
-        )}>
-          <div className="p-4 h-full">
-            <h3 className="font-semibold mb-4 text-gray-700">Pages</h3>
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="pdf-pages">
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="grid grid-cols-2 gap-3 h-[calc(100%-2rem)] overflow-y-auto"
-                  >
-                    {pages.map((page, index) => (
-                      <Draggable
-                        key={page.id}
-                        draggableId={page.id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={cn(
-                              "group relative aspect-[3/4] rounded-lg cursor-move overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all duration-200",
-                              snapshot.isDragging && "shadow-lg scale-105",
-                              currentPage === page.pageNumber && "ring-2 ring-primary"
-                            )}
-                            onClick={() => setCurrentPage(page.pageNumber)}
-                          >
-                            <iframe
-                              src={page.thumbnail}
-                              className="w-full h-full scale-[0.99] origin-top-left bg-white"
-                              title={`Page ${page.pageNumber} thumbnail`}
-                            />
-                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/50 to-transparent">
-                              <span className="text-sm text-white">Page {page.pageNumber}</span>
-                              {onPageDelete && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onPageDelete(index);
-                                  }}
-                                  className="absolute right-2 bottom-2 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-white/20 transition-all duration-200"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
-        </div>
+        <SidePanel
+          pages={pages}
+          currentPage={currentPage}
+          onPageSelect={setCurrentPage}
+          onPageDelete={onPageDelete}
+          onDragEnd={handleDragEnd}
+          isSidePanelOpen={isSidePanelOpen}
+          onToggleSidePanel={() => setIsSidePanelOpen(!isSidePanelOpen)}
+        />
       </div>
 
       {/* Bottom Navigation for Mobile */}
