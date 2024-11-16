@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Trash2, FileDown, Lock, Scissors, Merge, Archive, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Trash2, FileDown, Lock, Scissors, Merge, Archive, ChevronRight, ChevronLeft, RotateCw, Download } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+import { useToast } from './ui/use-toast';
 
 interface PDFViewerProps {
   selectedFile: string;
@@ -27,6 +28,7 @@ export const PDFViewer = ({
   
   const [currentPage, setCurrentPage] = useState(1);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(true);
+  const { toast } = useToast();
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -34,8 +36,33 @@ export const PDFViewer = ({
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
     setPages(items);
-    if (currentPage === result.source.index + 1) {
-      setCurrentPage(result.destination.index + 1);
+    // Update current page view if needed
+    setCurrentPage(result.destination.index + 1);
+  };
+
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(selectedFile);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'processed-document.pdf';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Success",
+        description: "Document downloaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to download document",
+        variant: "destructive",
+      });
     }
   };
 
@@ -52,6 +79,12 @@ export const PDFViewer = ({
           </Button>
           <Button onClick={onCompress} variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap bg-white/90">
             <Archive className="w-4 h-4 mr-2" /> Compress
+          </Button>
+          <Button onClick={() => {}} variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap bg-white/90">
+            <RotateCw className="w-4 h-4 mr-2" /> Rotate
+          </Button>
+          <Button onClick={handleDownload} variant="outline" size="sm" className="hover:bg-primary hover:text-white transition-colors whitespace-nowrap bg-white/90">
+            <Download className="w-4 h-4 mr-2" /> Download
           </Button>
         </div>
       </div>
@@ -85,10 +118,10 @@ export const PDFViewer = ({
 
         {/* Side Panel */}
         <div className={cn(
-          "fixed right-0 top-0 bottom-0 w-80 bg-white/80 backdrop-blur-sm border-l overflow-y-auto transition-all duration-300 ease-in-out shadow-lg h-screen pt-16",
+          "fixed right-0 top-0 bottom-0 w-80 bg-white/80 backdrop-blur-sm border-l transition-all duration-300 ease-in-out shadow-lg h-screen pt-16",
           isSidePanelOpen ? "translate-x-0" : "translate-x-full"
         )}>
-          <div className="p-4">
+          <div className="p-4 h-full">
             <h3 className="font-semibold mb-4 text-gray-700">Pages</h3>
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="pdf-pages">
@@ -96,7 +129,7 @@ export const PDFViewer = ({
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className="space-y-3"
+                    className="grid grid-cols-2 gap-3 h-[calc(100%-2rem)] overflow-y-auto"
                   >
                     {pages.map((page, index) => (
                       <Draggable
