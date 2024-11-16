@@ -38,14 +38,27 @@ export const PDFViewer = ({
     items.splice(result.destination.index, 0, reorderedItem);
     
     // Update pages array with new order
-    setPages(items.map((item, index) => ({
+    const updatedPages = items.map((item, index) => ({
       ...item,
       pageNumber: index + 1,
-    })));
+      thumbnail: `${selectedFile}#page=${item.pageNumber}`
+    }));
+    
+    setPages(updatedPages);
     
     // Update current page to follow the dragged item
     if (currentPage === result.source.index + 1) {
       setCurrentPage(result.destination.index + 1);
+    } else if (
+      result.destination.index < currentPage - 1 && 
+      result.source.index >= currentPage - 1
+    ) {
+      setCurrentPage(currentPage + 1);
+    } else if (
+      result.destination.index >= currentPage - 1 && 
+      result.source.index < currentPage - 1
+    ) {
+      setCurrentPage(currentPage - 1);
     }
   };
 
@@ -73,6 +86,12 @@ export const PDFViewer = ({
         variant: "destructive",
       });
     }
+  };
+
+  // Get the current page URL based on the reordered pages array
+  const getCurrentPageUrl = () => {
+    const currentPageData = pages.find(page => page.pageNumber === currentPage);
+    return currentPageData ? `${selectedFile}#page=${currentPageData.pageNumber}` : selectedFile;
   };
 
   return (
@@ -108,7 +127,7 @@ export const PDFViewer = ({
           <div className="h-full p-4">
             <div className="bg-white rounded-lg shadow-lg h-full animate-fade-in">
               <iframe
-                src={`${selectedFile}#page=${currentPage}`}
+                src={getCurrentPageUrl()}
                 className="w-full h-full rounded-lg"
                 title="PDF Preview"
               />
