@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FileUploader } from "@/components/FileUploader";
 import { FileList } from "@/components/FileList";
 import { ActionPanel } from "@/components/ActionPanel";
@@ -15,17 +15,15 @@ const Index = () => {
   const handleFilesAdded = (newFiles: File[]) => {
     setFiles((prev) => [...prev, ...newFiles]);
     if (newFiles.length > 0) {
-      setSelectedFiles([newFiles[0].id]); // Auto-select the first uploaded file
+      setSelectedFiles([newFiles[0].id]);
     }
   };
 
-  // Processing functions
   const handleMerge = async () => {
     toast({
       title: "Processing PDFs",
       description: "Merging selected PDF files...",
     });
-    // Implement PDF merge logic here
   };
 
   const handleSplit = async () => {
@@ -33,7 +31,6 @@ const Index = () => {
       title: "Processing PDF",
       description: "Splitting PDF into separate pages...",
     });
-    // Implement PDF split logic here
   };
 
   const handleCompress = async () => {
@@ -41,16 +38,14 @@ const Index = () => {
       title: "Processing File",
       description: "Compressing your file...",
     });
-    // Implement compression logic here
   };
 
-  // Find the selected file
   const selectedFile = files.find(f => f.id === selectedFiles[0]);
   const isPDF = selectedFile?.type?.includes('pdf');
   const isImage = selectedFile?.type?.includes('image');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-400">
       {selectedFile ? (
         isPDF ? (
           <PDFViewer 
@@ -68,30 +63,36 @@ const Index = () => {
       ) : (
         <div className="max-w-lg mx-auto px-4 py-8 space-y-8 animate-fade-in">
           <header className="text-center space-y-3">
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+            <h1 className="text-4xl font-bold text-white drop-shadow-lg">
               Document Manager
             </h1>
-            <p className="text-sm text-gray-600">
+            <p className="text-white/90 text-lg">
               Transform your documents effortlessly
             </p>
           </header>
 
-          <FileUploader onFilesAdded={handleFilesAdded} />
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-xl">
+            <FileUploader onFilesAdded={handleFilesAdded} />
+          </div>
           
           {files.length > 0 && (
             <div className="space-y-6 animate-fade-up">
-              <ActionPanel 
-                selectedFiles={selectedFiles}
-                onMerge={handleMerge}
-                onSplit={handleSplit}
-                onCompress={handleCompress}
-              />
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-xl">
+                <ActionPanel 
+                  selectedFiles={selectedFiles}
+                  onMerge={handleMerge}
+                  onSplit={handleSplit}
+                  onCompress={handleCompress}
+                />
+              </div>
               
-              <FileList
-                files={files}
-                selectedFiles={selectedFiles}
-                onSelectionChange={setSelectedFiles}
-              />
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-xl">
+                <FileList
+                  files={files}
+                  selectedFiles={selectedFiles}
+                  onSelectionChange={setSelectedFiles}
+                />
+              </div>
             </div>
           )}
         </div>

@@ -7,10 +7,7 @@ import { SidePanel } from './pdf/SidePanel';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 // Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 interface PDFViewerProps {
   selectedFile: string;
@@ -81,7 +78,7 @@ export const PDFViewer = ({
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-pink-400 via-purple-400 to-indigo-400">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-400">
       {/* Top Actions Bar */}
       <div className="flex items-center justify-between p-4 bg-white/90 backdrop-blur-sm border-b shadow-sm overflow-x-auto sticky top-0 z-10">
         <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
@@ -116,15 +113,36 @@ export const PDFViewer = ({
                 file={selectedFile}
                 onLoadSuccess={({ numPages }: any) => setNumPages(numPages)}
                 className="flex justify-center p-4"
-                loading={<div className="text-center p-4">Loading PDF...</div>}
-                error={<div className="text-center p-4 text-red-500">Error loading PDF. Please try again.</div>}
+                loading={
+                  <div className="flex items-center justify-center h-full">
+                    <div className="animate-pulse text-lg text-purple-600">
+                      Loading PDF...
+                    </div>
+                  </div>
+                }
+                error={
+                  <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                    <div className="text-red-500 text-lg font-semibold mb-2">
+                      Error loading PDF
+                    </div>
+                    <p className="text-gray-600">
+                      Please make sure the file is a valid PDF document and try again
+                    </p>
+                  </div>
+                }
               >
                 <Page
                   pageNumber={currentPage}
                   renderTextLayer={false}
                   renderAnnotationLayer={false}
                   className="shadow-lg"
-                  loading={<div className="text-center">Loading page...</div>}
+                  loading={
+                    <div className="flex items-center justify-center p-4">
+                      <div className="animate-pulse text-purple-600">
+                        Loading page...
+                      </div>
+                    </div>
+                  }
                 />
               </Document>
             </div>
