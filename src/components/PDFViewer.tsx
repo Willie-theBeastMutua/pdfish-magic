@@ -6,8 +6,11 @@ import { cn } from '@/lib/utils';
 import { SidePanel } from './pdf/SidePanel';
 import { Document, Page, pdfjs } from 'react-pdf';
 
-// Set up PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// Configure PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString();
 
 interface PDFViewerProps {
   selectedFile: string;
@@ -113,12 +116,15 @@ export const PDFViewer = ({
                 file={selectedFile}
                 onLoadSuccess={({ numPages }: any) => setNumPages(numPages)}
                 className="flex justify-center p-4"
+                loading={<div className="text-center p-4">Loading PDF...</div>}
+                error={<div className="text-center p-4 text-red-500">Error loading PDF. Please try again.</div>}
               >
                 <Page
                   pageNumber={currentPage}
                   renderTextLayer={false}
                   renderAnnotationLayer={false}
                   className="shadow-lg"
+                  loading={<div className="text-center">Loading page...</div>}
                 />
               </Document>
             </div>
