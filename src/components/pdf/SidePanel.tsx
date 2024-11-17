@@ -26,7 +26,7 @@ export const SidePanel = ({
     <>
       <button
         onClick={onToggleSidePanel}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm p-2 rounded-l-lg shadow-md z-10 hover:bg-gray-50 transition-colors"
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm p-2 rounded-l-lg shadow-md z-10 hover:bg-gray-50 transition-colors"
         aria-label={isSidePanelOpen ? "Close side panel" : "Open side panel"}
       >
         <ChevronRight className={cn("w-4 h-4", isSidePanelOpen && "rotate-180")} />
@@ -34,7 +34,7 @@ export const SidePanel = ({
 
       <div
         className={cn(
-          "fixed right-0 top-0 bottom-0 w-80 bg-white/80 backdrop-blur-sm border-l transition-all duration-300 ease-in-out shadow-lg h-screen pt-16",
+          "fixed right-0 top-0 bottom-0 w-80 bg-white/90 backdrop-blur-sm border-l transition-all duration-300 ease-in-out shadow-lg h-screen pt-16",
           isSidePanelOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -46,7 +46,7 @@ export const SidePanel = ({
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="grid grid-cols-2 gap-3 overflow-hidden"
+                  className="grid grid-cols-2 gap-3 overflow-y-auto max-h-[calc(100vh-8rem)]"
                 >
                   {pages.map((page, index) => (
                     <Draggable key={page.id} draggableId={page.id} index={index}>
