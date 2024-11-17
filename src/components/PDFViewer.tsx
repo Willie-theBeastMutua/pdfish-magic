@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Merge, Scissors, Archive, RotateCw, Download } from 'lucide-react';
 import { useToast } from './ui/use-toast';
@@ -7,7 +7,9 @@ import { SidePanel } from './pdf/SidePanel';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 // Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+const pdfjsVersion = pdfjs.version;
+const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
+pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 interface PDFViewerProps {
   selectedFile: string;
