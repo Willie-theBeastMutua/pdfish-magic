@@ -7,10 +7,7 @@ import { SidePanel } from './pdf/SidePanel';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 // Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 interface PDFViewerProps {
   selectedFile: string;
@@ -34,7 +31,7 @@ export const PDFViewer = ({
   })));
   
   const [currentPage, setCurrentPage] = useState(1);
-  const [numPages, setNumPages] = useState(null);
+  const [numPages, setNumPages] = useState<number | null>(null);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(true);
   const { toast } = useToast();
 
@@ -80,6 +77,15 @@ export const PDFViewer = ({
     }
   };
 
+  const handleLoadSuccess = ({ numPages: nextNumPages }: { numPages: number }) => {
+    setNumPages(nextNumPages);
+    setPages(Array.from({ length: nextNumPages }, (_, i) => ({
+      id: `page-${i + 1}`,
+      pageNumber: i + 1,
+      thumbnail: `${selectedFile}#page=${i + 1}`
+    })));
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-400">
       {/* Top Actions Bar */}
@@ -114,7 +120,7 @@ export const PDFViewer = ({
             <div className="bg-white/95 rounded-lg shadow-lg h-full animate-fade-in overflow-auto">
               <Document
                 file={selectedFile}
-                onLoadSuccess={({ numPages }: any) => setNumPages(numPages)}
+                onLoadSuccess={handleLoadSuccess}
                 className="flex justify-center p-4"
                 loading={
                   <div className="flex items-center justify-center h-full">
